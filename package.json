@@ -1,0 +1,24 @@
+{
+  "name": "cantrash",
+  "version": "1.0.0",
+  "description": "a package which helps you to improve your code quality and makes the coding experience more comfortable by deleting your unwanted files by not deleting it\"",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kratikesh18/cantrash.git"
+  },
+  "keywords": [
+    "cantrash",
+    "trashcan"
+  ],
+  "author": "kratikesh18",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kratikesh18/cantrash/issues"
+  },
+  "homepage": "https://github.com/kratikesh18/cantrash#readme"
+}
