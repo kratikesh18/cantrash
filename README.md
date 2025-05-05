@@ -1,4 +1,4 @@
-# 🗑️ trashcan
+# 🗑️ cantrash
 
 **cantrash** is a simple and lightweight Node.js CLI tool to safely “remove” unwanted code files or folders by moving them to a separate `.cantrash` directory — without deleting them from your project. This allows you to keep your codebase clean while preserving old files for recovery if needed.
 
