@@ -1,6 +1,6 @@
 {
   "name": "cantrash",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a package which helps you to improve your code quality and makes the coding experience more comfortable by deleting your unwanted files by not deleting it\"",
   "type": "module",
   "main": "index.js",
