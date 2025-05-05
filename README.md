@@ -1,12 +1,12 @@
 # 🗑️ trashcan
 
-**trashcan** is a simple and lightweight Node.js CLI tool to safely “remove” unwanted code files or folders by moving them to a separate `.trashcan` directory — without deleting them from your project. This allows you to keep your codebase clean while preserving old files for recovery if needed.
+**cantrash** is a simple and lightweight Node.js CLI tool to safely “remove” unwanted code files or folders by moving them to a separate `.cantrash` directory — without deleting them from your project. This allows you to keep your codebase clean while preserving old files for recovery if needed.
 
 ---
 
 ## 🚀 Features
 
-✅ Move files or folders to `.trashcan` without permanent deletion  
+✅ Move files or folders to `.cantrash` without permanent deletion  
 ✅ Keep your main project clean and organized  
 ✅ Easily restore files when needed  
 ✅ Simple CLI commands  
@@ -17,7 +17,7 @@
 ## 📦 Installation
 
 ```bash
-npm install -g trashcan
+npm install -g cantrash
 ```
 
 ---
@@ -25,29 +25,29 @@ npm install -g trashcan
 ## ⚙️ Usage
 
 ```bash
-trashcan <file_or_folder_path>
+cantrash <file_or_folder_path>
 ```
 
 ### Example
 
 ```bash
-trashcan src/oldComponent.js
+cantrash src/oldComponent.js
 ```
 
-This will move `oldComponent.js` to `.trashcan/src/oldComponent.js`
+This will move `oldComponent.js` to `.cantrash/src/oldComponent.js`
 
 ---
 
 ## ♻️ Restore Files
 
 ```bash
-trashcan restore <file_or_folder_path>
+cantrash restore <file_or_folder_path>
 ```
 
 Example:
 
 ```bash
-trashcan restore src/oldComponent.js
+cantrash restore src/oldComponent.js
 ```
 
 ---
@@ -55,25 +55,25 @@ trashcan restore src/oldComponent.js
 ## 🧹 Empty Trashcan
 
 ```bash
-trashcan empty
+cantrash empty
 ```
 
-⚠️ This will **permanently delete** all files in `.trashcan`.
+⚠️ This will **permanently delete** all files in `.cantrash`.
 
 ---
 
-## 💡 Why use trashcan?
+## 💡 Why use cantrash?
 
 - Safe removal: No accidental deletions  
 - Organized projects: Keep unused code out of the main tree  
-- Version control friendly: `.trashcan` can be added to `.gitignore`  
+- Version control friendly: `.cantrash` can be added to `.gitignore`  
 - Fast recovery: Restore files in seconds
 
 ---
 
 ## 📂 Configuration
 
-You can customize the trash directory by creating a `.trashcanrc` file:
+You can customize the trash directory by creating a `.cantrashrc` file:
 
 ```json
 {
@@ -97,7 +97,7 @@ We welcome contributions! To get started:
 
 ## 📄 License
 
-MIT License © 2025 [Your Name or GitHub Username]
+MIT License © 2025 [kratikesh18]
 
 ---
 
