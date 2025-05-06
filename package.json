@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/kratikesh18/cantrash/issues"
   },
-  "homepage": "https://github.com/kratikesh18/cantrash#readme"
+  "homepage": "https://github.com/kratikesh18/cantrash#readme",
+  "bin": {
+    "cantrash": "./bin/cantrash.js"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.0"
+  }
 }
