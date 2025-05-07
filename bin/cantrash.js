@@ -10,9 +10,11 @@ if (args.length === 3) {
 }
 
 const command = args[0];
-const targetPath = args[1];
-
-const targetedFileType = args[1].split(".")[2];
+const targetPath = args[1] || "";
+const targetedFileType = "";
+if (command != "empty") {
+  targetedFileType = args[1].split(".")[2];
+}
 
 const trashDir = ".cantrash";
 const destPath = path.join(trashDir, targetPath);
@@ -85,6 +87,17 @@ async function restoreFromTrash() {
   }
 }
 
+async function emptyTrashBin() {
+  try {
+    fs.emptyDir(trashDir);
+    console.log("cantrash is emptied");
+  } catch (error) {
+    console.log(`❌ Failed to Emptying Trashbin : ${error.message}`);
+  }
+}
+if (command === "empty") {
+  emptyTrashBin();
+}
 if (command === "restore") {
   restoreFromTrash();
 }
