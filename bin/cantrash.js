@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 import fs from "fs-extra";
 import path from "path";
+import readline from "readline";
 
 const args = process.argv.slice(2);
 
-if (args.length === 3) {
-  console.error("❌ Please provide valid command");
+if (args.length < 1) {
+  console.error("❌ Please provide a valid command (move, restore, empty)");
   process.exit(1);
 }
 
 const command = args[0];
-const targetPath = args[1] || "";
-const targetedFileType = "";
-if (command != "empty") {
-  targetedFileType = args[1].split(".")[2];
-}
-
+console.log(args);
+const targetPathArray = args[1].split("\\") || "";
+// const targetPath = targetPathArray[targetPathArray.length - 1];
+const targetPath = args[1];
+console.log(targetPath);
 const trashDir = ".cantrash";
 const destPath = path.join(trashDir, targetPath);
 
@@ -28,79 +28,150 @@ const comments = {
   html: "<!--,-->",
 };
 
+async function readFirstLine(filePath) {
+  const fileStream = fs.createReadStream(filePath);
+
+  const rows = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
+
+  for await (const line of rows) {
+    return line;
+    rows.close();
+  }
+}
+
 async function moveToTrash() {
   try {
-    // Ensure trashcan directory exists
-    await fs.ensureDir(path.dirname(destPath));
-
-    //read the file
-
-    const fileContent = fs.readFileSync(
-      targetPath,
-      "utf8",
-      (error, fileContent) => {
-        if (error) {
-          console.error("Error performing operation 1");
-          return;
-        }
-      }
-    );
-
-    let pastPathData = "";
-    if (targetedFileType in comments) {
-      if (targetedFileType === "html" || targetedFileType === "css") {
-        let commentInit = comments[targetedFileType].split(",")[0];
-        let commentEnd = comments[targetedFileType].split(",")[1];
-
-        pastPathData = `${commentInit} ${targetPath} ${commentEnd}\n${fileContent}`;
-      } else {
-        pastPathData = `${comments[targetedFileType]} ${targetPath}\n${fileContent}`;
-      }
+    if (!targetPath) {
+      console.error("❌ Please provide a file or folder path to move.");
+      process.exit(1);
     }
 
-    //path to write at the head of the file
+    await fs.ensureDir(path.dirname(destPath));
 
-    fs.writeFileSync(targetPath, pastPathData, "utf8", (error) => {
-      if (error) {
-        console.error("Error performing operation 2");
-        return;
+    const fileContent = fs.readFileSync(targetPath, "utf8");
+    const fileExt = path.extname(targetPath).slice(1); // e.g., 'js'
+
+    let prependedContent = fileContent;
+    if (comments[fileExt]) {
+      if (fileExt === "html" || fileExt === "css") {
+        const [commentInit, commentEnd] = comments[fileExt].split(",");
+        prependedContent = `${commentInit} ${targetPath} ${commentEnd}\n${fileContent}`;
+      } else {
+        prependedContent = `${comments[fileExt]} ${targetPath}\n${fileContent}`;
       }
-    });
-    // Move file/folder
-    await fs.move(targetPath, destPath, { overwrite: true });
+      fs.writeFileSync(targetPath, prependedContent, "utf8");
+    }
 
+    await fs.move(targetPath, destPath, { overwrite: true });
     console.log(`✅ Moved ${targetPath} to ${destPath}`);
   } catch (err) {
     console.error(`❌ Failed to move: ${err.message}`);
   }
 }
 
+function move(oldPath, newPath, callback) {
+  fs.rename(oldPath, newPath, function (err) {
+    if (err) {
+      if (err.code === "EXDEV") {
+        copy();
+      } else {
+        callback(err);
+      }
+      return;
+    }
+    callback();
+  });
+
+  function copy() {
+    var readStream = fs.createReadStream(oldPath);
+    var writeStream = fs.createWriteStream(newPath);
+
+    readStream.on("error", callback);
+    writeStream.on("error", callback);
+
+    readStream.on("close", function () {
+      fs.unlink(oldPath, callback);
+    });
+
+    readStream.pipe(writeStream);
+  }
+}
+
 async function restoreFromTrash() {
   try {
-    //get the file
-    //remove the commments
-    //get the path
-    //restore it by the path
-    console.log("file restored");
+    // Placeholder for restore logic
+    const fileToRestore = (await fs.readdir(trashDir))[0];
+    const oldPath = `${trashDir}/${fileToRestore}`;
+
+    const pathToRestore = await readFirstLine(oldPath);
+
+    // console.log(pathToRestore);
+    const newPath = pathToRestore.split(" ")[1];
+
+    try {
+      await fs.move(oldPath, newPath, { overwrite: true });
+      console.log("file restored");
+    } catch (error) {
+      console.log(error);
+    }
   } catch (error) {
-    console.log(`❌ Failed to restore : ${error.message}`);
+    console.error(`❌ Failed to restore: ${error.message}`);
   }
 }
 
 async function emptyTrashBin() {
-  try {
-    fs.emptyDir(trashDir);
-    console.log("cantrash is emptied");
-  } catch (error) {
-    console.log(`❌ Failed to Emptying Trashbin : ${error.message}`);
+  if (!(await fs.pathExists(trashDir))) {
+    console.log("🟡 Trash directory does not exist. Nothing to empty.");
+    return;
+  }
+
+  const files = await fs.readdir(trashDir);
+  if (files.length === 0) {
+    console.log("🟡 Trashcan is already empty.");
+    return;
+  }
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question(
+    `⚠️  Are you sure you want to delete ${files.length} items? (yes/no): `,
+    async (answer) => {
+      rl.close();
+      if (answer.toLowerCase() === "yes" || "y") {
+        try {
+          await fs.emptyDir(trashDir);
+          console.log(`✅ Trashcan emptied. ${files.length} items removed.`);
+        } catch (error) {
+          console.error(`❌ Failed to empty trash bin: ${error.message}`);
+        }
+      } else {
+        console.log("✅ Empty operation cancelled.");
+      }
+    }
+  );
+}
+
+async function main() {
+  switch (command) {
+    case "move":
+      await moveToTrash();
+      break;
+    case "restore":
+      await restoreFromTrash();
+      break;
+    case "empty":
+      await emptyTrashBin();
+      break;
+    default:
+      console.error("❌ Unknown command. Use move, restore, or empty.");
+      process.exit(1);
   }
 }
-if (command === "empty") {
-  emptyTrashBin();
-}
-if (command === "restore") {
-  restoreFromTrash();
-}
-if (command === "move") {
-  moveToTrash();
-}
+
+main();

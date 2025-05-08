@@ -25,6 +25,7 @@
     "cantrash": "./bin/cantrash.js"
   },
   "dependencies": {
-    "fs-extra": "^11.3.0"
+    "fs-extra": "^11.3.0",
+    "readline": "^1.3.0"
   }
 }
